@@ -48,7 +48,7 @@ Para realiar a instalação basta acessar o menu de Operators Hub e pesquisar po
 
 <p align="center">
   <img src="/images/Operators.png" alt="Menu operators">
-   <img src="/images/Operators-logging.png.png" alt="Operators para serem instalados">
+   <img src="/images/Operators-logging.png" alt="Operators para serem instalados">
 </p>
 
 Basta aceitar as configiurações default do operator e em seguida realizar a instalação do ClusterLoggig applicando o arquivo [Cluster Logging.yaml](CustomObjects/ClusterLogging.yaml)
