@@ -38,7 +38,30 @@ quarkus.openshift.deploy=true
 dentro de `application.properties`, em seguida basta executar o comando abaixo para realizar o deploy no namespace desejado.
 
 ```bash
-quarkus deploy
+quarkus build
+```
+
+Caso apresente um `crash loop back-off` há utilizar a imagem do registry interno, há a possibilidade de realizar o deploy através do build da imagem utilizando podman. para isso é necessário comentar a tag: `quarkus.openshift.deploy=true`
+
+E realizar o build do projeto quarkus, posterior ao build é necessário realizar a disponibilização da imagem no quay.io para utilizar-la para deploy da aplicação. Para isso é necessário realizar o build da imagem por meio do Dockerfile na raiz do projeto publicar-la seguindo os passos a baixo.
+
+```bash
+podman build -t quay.io/<seu_usuario_quay>/<nome_imagem>:<tag> .
+
+podman login -u <user> -p <password> quay.io
+
+podman push quay.io/<seu_usuario_quay>/<nome_imagem>:<tag>
+
+```
+
+É necessário realizar a exposição do repository para visibilidade da imagem para isso acesse o seu repository->settings->make it public.
+
+![Transformar o repository para publico](/images/quay.png)
+
+Posterior basta realizar o deploy no openshift através da imagem no quay.
+
+```bash
+oc new-app --image=quay.io/<seu_usuario_quay>/<nome_imagem>:<tag>
 ```
 
 A cada 2 minutos é feito a leitura de novos logs e adicionada ao elasticsearch.
