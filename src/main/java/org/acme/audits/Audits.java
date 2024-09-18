@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.audits;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PersistenceUnit;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,6 +24,14 @@ public class Audits extends PanacheEntityBase {
     @JsonProperty("auditable_type")
     @Column(name = "auditable_type")
     public String auditableType;
+
+    @JsonProperty("auditable_id")
+    @Column(name = "auditable_id")
+    public Long auditableId;
+
+    @JsonProperty("username")
+    @Column(name = "username")
+    public String username;
 
     @JsonProperty("user_id")
     @Column(name = "user_id")

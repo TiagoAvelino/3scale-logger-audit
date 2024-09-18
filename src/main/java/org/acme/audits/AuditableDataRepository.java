@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.audits;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
