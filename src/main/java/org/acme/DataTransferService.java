@@ -1,29 +1,68 @@
 package org.acme;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import org.acme.audiPersistent.Audits3scale;
 import org.acme.audiPersistent.Audits3scaleRepository;
 import org.acme.audits.AuditableDataRepository;
 import org.acme.audits.Audits;
+import org.jboss.logging.Logger;
 
+import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class DataTransferService {
-
+    private static final Logger LOGGER = Logger.getLogger(DataTransferService.class);
     @Inject
     AuditableDataRepository auditsRepository;
 
     @Inject
     Audits3scaleRepository audits3scaleRepository;
 
-    // Use the source persistence unit's transaction manager
-    // @Transactional()
+    private static final String LAST_READ_ID_FILE = "mnt/last_read_id.txt";
+
+    private Long lastReadId;
+
+    private void ensureDirectoryExists() {
+        File directory = new File("mnt");
+        if (!directory.exists()) {
+            if (directory.mkdirs()) {
+                LOGGER.info("Directory 'mnt' created successfully.");
+            } else {
+                LOGGER.error("Failed to create 'mnt' directory.");
+            }
+        }
+    }
+
+    private Long loadLastReadIdFromFile() {
+        File file = new File(LAST_READ_ID_FILE);
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line = reader.readLine();
+                if (line != null) {
+                    return Long.parseLong(line);
+                }
+            } catch (IOException e) {
+                LOGGER.error("Error reading last read ID from file", e);
+            }
+        }
+        return 0L; // Default to 0 if the file doesn't exist or can't be read
+    }
+
+    @Scheduled(every = "2m")
     public void transferData() {
-        List<Audits> auditsList = auditsRepository.listAll();
+        ensureDirectoryExists();
+        this.lastReadId = loadLastReadIdFromFile();
+
+        List<Audits> auditsList = auditsRepository.find("id > ?1", lastReadId).list();
+        LOGGER.info("Starting data transfer of " + auditsList.size() + "New records.");
 
         for (Audits audits : auditsList) {
             Audits3scale audits3scale = mapAuditsToAudits3scale(audits);
