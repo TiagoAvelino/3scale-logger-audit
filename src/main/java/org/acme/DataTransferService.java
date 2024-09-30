@@ -26,44 +26,32 @@ public class DataTransferService {
     @Inject
     Audits3scaleRepository audits3scaleRepository;
 
-    private static final String LAST_READ_ID_FILE = "mnt/last_read_id.txt";
-
     private Long lastReadId;
 
-    private void ensureDirectoryExists() {
-        File directory = new File("mnt");
-        if (!directory.exists()) {
-            if (directory.mkdirs()) {
-                LOGGER.info("Directory 'mnt' created successfully.");
-            } else {
-                LOGGER.error("Failed to create 'mnt' directory.");
-            }
-        }
-    }
+    private Long loadLastReadIdFromDb() {
 
-    private Long loadLastReadIdFromFile() {
-        File file = new File(LAST_READ_ID_FILE);
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line = reader.readLine();
-                if (line != null) {
-                    return Long.parseLong(line);
-                }
-            } catch (IOException e) {
-                LOGGER.error("Error reading last read ID from file", e);
-            }
-        }
-        return 0L; // Default to 0 if the file doesn't exist or can't be read
+        // File file = new File(LAST_READ_ID_FILE);
+        // if (file.exists()) {
+        // try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        // String line = reader.readLine();
+        // if (line != null) {
+        // return Long.parseLong(line);
+        // }
+        // } catch (IOException e) {
+        // LOGGER.error("Error reading last read ID from file", e);
+        // }
+        // }
+        return audits3scaleRepository.findMaxIdAuditable().orElse(null);
     }
 
     @Scheduled(every = "2m")
     public void transferData() {
-        ensureDirectoryExists();
-        this.lastReadId = loadLastReadIdFromFile();
-
+        this.lastReadId = loadLastReadIdFromDb();
+        if (lastReadId == null) {
+            lastReadId = 0L;
+        }
         List<Audits> auditsList = auditsRepository.find("id > ?1", lastReadId).list();
         LOGGER.info("Starting data transfer of " + auditsList.size() + "New records.");
-
         for (Audits audits : auditsList) {
             Audits3scale audits3scale = mapAuditsToAudits3scale(audits);
             saveToTargetDatabase(audits3scale);
@@ -83,6 +71,7 @@ public class DataTransferService {
         // audits3scale.id = audits.id;
 
         // Set other fields as before
+        audits3scale.idAudit = audits.id;
         audits3scale.auditableType = audits.auditableType;
         audits3scale.userId = audits.userId;
         audits3scale.userType = audits.userType;

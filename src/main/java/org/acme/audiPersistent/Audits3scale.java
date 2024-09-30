@@ -13,12 +13,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "audits-3scale")
+@Table(name = "audits_3scale")
 public class Audits3scale extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
+
+    @JsonProperty("id_audit")
+    @Column(name = "id_audit")
+    public Long idAudit;
 
     @JsonProperty("auditable_type")
     @Column(name = "auditable_type")

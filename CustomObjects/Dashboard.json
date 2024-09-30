@@ -1,0 +1,203 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 18,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "bdz2dqqa29ou8d"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "bdz2dqqa29ou8d"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT auditable_id as 'Auditable ID', auditable_type as 'Type', user_id as 'User ID', action as 'Action', created_at, audited_changes, remote_address, request_uuid FROM sampledb.`audits-3scale` WHERE (user_id IN ($user_id) OR \"$user_id\" = 'NULL') AND \r\n(auditable_type IN ($auditable_type) OR \"$auditable_type\" = 'NULL') AND\r\n(auditable_id IN ($auditable_id) OR \"$auditable_id\" = 'NULL') AND\r\n created_at between $__timeFrom() and $__timeTo()  ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Eventos",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "NULL",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "bdz2dqqa29ou8d"
+        },
+        "definition": "SELECT auditable_id FROM `audits-3scale` WHERE created_at between $__timeFrom() and $__timeTo() ",
+        "description": "auditable_id",
+        "hide": 0,
+        "includeAll": true,
+        "multi": false,
+        "name": "auditable_id",
+        "options": [],
+        "query": "SELECT auditable_id FROM `audits-3scale` WHERE created_at between $__timeFrom() and $__timeTo() ",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": "NULL",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "bdz2dqqa29ou8d"
+        },
+        "definition": "SELECT user_id FROM `audits-3scale` WHERE created_at between $__timeFrom() and $__timeTo() ",
+        "hide": 0,
+        "includeAll": true,
+        "label": "User ID",
+        "multi": false,
+        "name": "user_id",
+        "options": [],
+        "query": "SELECT user_id FROM `audits-3scale` WHERE created_at between $__timeFrom() and $__timeTo() ",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": "NULL",
+        "current": {
+          "selected": true,
+          "text": "Metric",
+          "value": "Metric"
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "bdz2dqqa29ou8d"
+        },
+        "definition": "SELECT auditable_type FROM `audits-3scale` WHERE created_at between $__timeFrom() and $__timeTo() ",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Type",
+        "multi": false,
+        "name": "auditable_type",
+        "options": [],
+        "query": "SELECT auditable_type FROM `audits-3scale` WHERE created_at between $__timeFrom() and $__timeTo() ",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Auditoria",
+  "uid": "ddz2yc9lkwfswf",
+  "version": 17,
+  "weekStart": ""
+}
